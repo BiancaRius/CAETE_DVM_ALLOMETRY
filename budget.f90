@@ -25,7 +25,7 @@ module budget
 
 contains
 
-   subroutine daily_budget( dt, w1, w2, ts, temp, p0, ipar, rh&
+   subroutine daily_budget(step, year_id, dt, w1, w2, ts, temp, p0, ipar, rh&
         &, mineral_n, labile_p, on, sop, op, catm, sto_budg_in, cl1_in, ca1_in, cf1_in, dleaf_in, dwood_in&
         &, droot_in, uptk_costs_in, wmax_in, evavg, epavg, phavg, aravg, nppavg&
         &, laiavg, rcavg, f5avg, rmavg, rgavg, cleafavg_pft, cawoodavg_pft&
@@ -57,7 +57,7 @@ contains
       real(r_4),intent(in) :: labile_p             ! solution P O4P  gm-2
       real(r_8),intent(in) :: on, sop, op          ! Organic N, isoluble inorganic P, Organic P g m-2
       real(r_8),intent(in) :: catm, wmax_in                 ! ATM CO2 concentration ppm
-      ! real(r_8),intent(in) :: year_id               ! identify when a year is completed
+      integer(i_4),intent(in) :: year_id, step               ! identify when a year is completed
 
 
 
@@ -174,8 +174,9 @@ contains
       real(r_8) :: soil_sat, ar_aux
       real(r_8), dimension(:), allocatable :: idx_grasses, idx_pdia
       
-      
-      
+      if(year_id.lt.12.and.year_id.ne.0)then
+         print*, 'inside budget',year_id, step
+      endif
       !     START
       !     --------------
       !     Grid cell area fraction 0-1
@@ -298,7 +299,7 @@ contains
       !$OMP PRIVATE(p, ri, carbon_in_storage, testcdef, sr, dt1, mr_sto, growth_stoc, ar_aux)
       
       
-
+      
       do p = 1,nlen
 
         

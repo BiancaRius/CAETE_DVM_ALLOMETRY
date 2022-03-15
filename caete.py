@@ -857,6 +857,7 @@ class grd:
         co2 = find_co2(year0)
         count_days = start.dayofyr - 2
 
+        
 
         testing = np.zeros(npls, order='F')
 
@@ -891,13 +892,14 @@ class grd:
             
             
 
-
+            
+        
 
             # print(steps.size)
             for step in range(steps.size):
+               
                 # day_aux = 366 if m.leap(year0) == 1 else 365
-                # if m.leap(year0) == 1: print(day_aux)
-                
+                # if day_aux == 366: print(day_aux)    
                 # print(step)
                 if steps.size==731:
                     if step==364:
@@ -922,12 +924,53 @@ class grd:
 
               
                 if steps.size==4018:
-                    for teste_year in range(1,4018,365):
-                        print(teste_year)
+                    
+                    if step == 364:
+                        year_id = 13
+                        # print(year_id)
+
+                    if step == 730:
+                        year_id = 14
+                        # print(year_id)
+
+                    if step == 1095:
+                        year_id = 15
+                        # print(year_id)
+
+                    if step == 1460:
+                        year_id = 16
+                        # print(year_id)
+
+                    if step == 1825:
+                        year_id = 17
+                        # print(year_id)
+
+                    if step == 2191:
+                        year_id = 18
+                        # print(year_id)
+
+                    if step == 2556:
+                        year_id = 19
+                        # print(year_id)
+
+                    if step == 2921:
+                        year_id = 20
+                        # print(year_id)
+
+                    if step == 3286:
+                        year_id = 21
+                        # print(year_id)
+
+                    if step == 3652:
+                        year_id = 22
+                        # print(year_id)
+
+                    if step == 4017:
+                        year_id = 23
+                        # print(year_id)
+
                 
-                else:
-                    year_id = 0
-                    # print(year_id)
+               
                 
                 if fix_co2_p:
                     pass
@@ -1008,7 +1051,7 @@ class grd:
                     c += 1
                 ton = self.sp_organic_n + self.sp_sorganic_n
                 top = self.sp_organic_p + self.sp_sorganic_p
-                out = model.daily_budget(self.pls_table, self.wp_water_upper_mm, self.wp_water_lower_mm,
+                out = model.daily_budget(step,year_id,self.pls_table, self.wp_water_upper_mm, self.wp_water_lower_mm,
                                          self.soil_temp, temp[step], p_atm[step],
                                          ipar[step], ru[step], self.sp_available_n, self.sp_available_p,
                                          ton, top, self.sp_organic_p, co2, sto, cleaf, cwood, croot,
@@ -1374,6 +1417,7 @@ class grd:
         rlo = []
         lnco = []
         
+        year_id = 0
 
         sto = self.vp_sto
         cleaf = self.vp_cleaf
@@ -1385,10 +1429,76 @@ class grd:
         uptk_costs = np.zeros(npls, order='F')
         # nppday = np.zeros(npls, order='F')
 
-        print(steps.size)
+        # print(steps.size)
         for step in range(steps.size):
 
-            
+            if steps.size==731:
+                if step==364:
+                    year_id = 8
+                     # print(year_id)
+                else:
+                    year_id = 0
+                     
+                if step==730:
+                    year_id = 9
+                     # print(year_id)
+                else:
+                    year_id = 0
+                
+            if steps.size==730:
+                if step==364:
+                    year_id = 10
+                     # print(year_id)
+                else:
+                    year_id = 0
+
+                if step==729:
+                    year_id = 11
+                     # print(year_id)
+                else:
+                    year_id = 0
+
+                    
+            if steps.size==365:
+                if step==364:
+                    year_id = 12
+
+            if steps.size==4018:
+                if step == 364:
+                    year_id = 13
+                     # print(year_id)
+                if step == 730:
+                    year_id = 14
+                     # print(year_id)
+                if step == 1095:
+                    year_id = 15
+                     # print(year_id)
+                if step == 1460:
+                    year_id = 16
+                     # print(year_id)
+                if step == 1825:
+                    year_id = 17
+                     # print(year_id)
+                if step == 2191:
+                    year_id = 18
+                     # print(year_id)
+                if step == 2556:
+                    year_id = 19
+                     # print(year_id)
+                if step == 2921:
+                    year_id = 20
+                     # print(year_id)
+                if step == 3286:
+                    year_id = 21
+                     # print(year_id)
+                if step == 3652:
+                    year_id = 22
+                     # print(year_id)
+                if step == 4017:
+                    year_id = 23
+                     # print(year_id)
+           
+                                                          
 
             loop += 1
             count_days += 1
@@ -1409,7 +1519,7 @@ class grd:
             co2 += next_year
             self.soil_temp = st.soil_temp(self.soil_temp, temp[step])
 
-            out = model.daily_budget(self.pls_table, self.wp_water_upper_mm, self.wp_water_lower_mm,
+            out = model.daily_budget(step, year_id, self.pls_table, self.wp_water_upper_mm, self.wp_water_lower_mm,
                                      self.soil_temp, temp[step], p_atm[step],
                                      ipar[step], ru[step], self.sp_available_n, self.sp_available_p,
                                      self.sp_snc[:4].sum(
