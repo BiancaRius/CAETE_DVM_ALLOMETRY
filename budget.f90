@@ -31,7 +31,7 @@ contains
         &, laiavg, rcavg, f5avg, rmavg, rgavg, cleafavg_pft, cawoodavg_pft&
         &, cfrootavg_pft, storage_out_bdgt_1, ocpavg, wueavg, cueavg, c_defavg&
         &, vcmax_1, specific_la_1, nupt_1, pupt_1, litter_l_1, cwd_1, litter_fr_1, npp2pay_1, lit_nut_content_1&
-        &, delta_cveg_1, limitation_status_1, uptk_strat_1, cp, c_cost_cwm) !, nppavg_pft)
+        &, delta_cveg_1, limitation_status_1, uptk_strat_1, cp, c_cost_cwm, nppavg_pft)
 
 
       use types
@@ -98,7 +98,7 @@ contains
       real(r_8),dimension(npls),intent(out) :: cleafavg_pft   !Carbon in plant tissues (kg m-2)
       real(r_8),dimension(npls),intent(out) :: cawoodavg_pft  !
       real(r_8),dimension(npls),intent(out) :: cfrootavg_pft  !
-      ! real(r_8),dimension(npls),intent(out) :: nppavg_pft  !
+      real(r_8),dimension(npls),intent(out) :: nppavg_pft  !
 
       real(r_8),dimension(npls),intent(out) :: ocpavg         ! [0-1] Gridcell occupation
       real(r_8),dimension(3,npls),intent(out) :: delta_cveg_1
@@ -134,7 +134,6 @@ contains
       real(r_4),dimension(:),allocatable :: ar     !Autotrophic respiration (kgC/m2/yr)
       real(r_4),dimension(:),allocatable :: nppa   !Net primary productivity / auxiliar
       real(r_4),dimension(:),allocatable :: npp_day !NPP in a day to be accumulated in a year (KgC/m2/day)
-      real(r_4),dimension(:),allocatable :: npp_day_accu  !NPP in a day to be accumulated in a year (KgC/m2/day)
       real(r_8),dimension(:),allocatable :: laia   !Leaf area index (m2 leaf/m2 area)
       real(r_4),dimension(:),allocatable :: rc2    !Canopy resistence (s/m)
       real(r_4),dimension(:),allocatable :: f1     !
@@ -173,7 +172,8 @@ contains
       real(r_8), dimension(3,npls) :: sto_budg
       real(r_8) :: soil_sat, ar_aux
       real(r_8), dimension(:), allocatable :: idx_grasses, idx_pdia
-      
+      real(r_4),dimension(npls) :: npp_day_accu  !NPP in a day to be accumulated in a year (KgC/m2/day)
+
       ! if(year_id.gt.0)then
       !    print*, 'inside budget',year_id, step
       ! endif
@@ -239,7 +239,7 @@ contains
       allocate(evap(nlen))
       allocate(nppa(nlen))
       allocate(npp_day(nlen))
-      allocate(npp_day_accu(nlen))
+      ! allocate(npp_day_accu(nlen))
       allocate(ph(nlen))
       allocate(ar(nlen))
       allocate(laia(nlen))
@@ -301,9 +301,9 @@ contains
       
       
       do p = 1,nlen
-         if(year_id.gt.0)then
-            print*, year_id, p
-         endif
+         ! if(year_id.gt.0)then
+            ! print*, year_id, p
+         ! endif
          carbon_in_storage = 0.0D0
          testcdef = 0.0D0
          sr = 0.0D0
@@ -414,10 +414,14 @@ contains
          ! print*, 'npp accu before', npp_day_accu(p)
          npp_day(p) = (real(nppa(p),kind=r_8) * (1000.0D0 / 365.242D0))
 
-         npp_day_accu(p) = npp_day_accu(p) + npp_day(p)
+         ! if(step.eq.1.or.step.eq.365) then
+         !    npp_day_accu(p) = npp_day(p)
+         ! else 
+         !    npp_day_accu(p) = npp_day_accu(p) + npp_day(p)
+         ! endif
 
          ! if(year_id.lt.12) then
-            ! print*, npp_day_accu(p), step, p, npp_day(p), year_id
+         !    ! print*, npp_day_accu(p), step, p, npp_day(p), year_id
          ! endif
 
          ! if(year_id.eq.8)then
@@ -449,7 +453,7 @@ contains
       nupt_1(:) = 0.0D0
       pupt_1(:) = 0.0D0
 
-      ! nppavg_pft(:) = 0.0D0
+      nppavg_pft(:) = 0.0D0
       cleafavg_pft(:) = 0.0D0
       cawoodavg_pft(:) = 0.0D0
       cfrootavg_pft(:) = 0.0D0
@@ -536,7 +540,42 @@ contains
       do p = 1, nlen
          ri = lp(p)
 
-         ! nppavg_pft(ri) = npp_day(p)
+         ! print*, 'ri', ri !, 'lp', lp, 'p', p, 'lp(p)', lp(p)
+         if(step.eq.1) then 
+            npp_day_accu(ri) = npp_day(p)
+            if(npp_day(p).le.0.)then 
+               npp_day_accu(ri) = 0.
+            else
+               npp_day_accu(ri) = npp_day_accu(ri) 
+            endif
+         else if (step.eq.365) then 
+            npp_day_accu(ri) = npp_day(p)
+            if(npp_day(p).le.0.)then 
+               npp_day_accu(ri) = 0.
+            else
+               npp_day_accu(ri) = npp_day_accu(ri) 
+            endif  
+         else 
+             npp_day_accu(ri) = npp_day_accu(ri) + npp_day(p)
+             if(npp_day(p).le.0.)then 
+               npp_day_accu(ri) = 0.
+            else
+               npp_day_accu(ri) = npp_day_accu(ri) 
+            endif
+         endif
+
+         if(year_id.lt.12.and.p.eq.2) then
+            print*, npp_day_accu(ri), step, p, npp_day(p), year_id
+         endif
+
+         ! if(step.eq.365)then
+         !    print*, '365',npp_day_accu(ri), step, p, npp_day(p), year_id
+         ! endif
+         ! if (step.eq.366) then
+         !    print*, '366',npp_day_accu(ri), step, p, npp_day(p), year_id
+         ! endif
+         ! print*, npp_day_accu(ri), ri, npp_day(p), p
+
          cleafavg_pft(ri)  = cl1_int(p)
          cawoodavg_pft(ri) = ca1_int(p)
          cfrootavg_pft(ri) = cf1_int(p)
@@ -552,7 +591,7 @@ contains
       deallocate(evap)
       deallocate(nppa)
       deallocate(npp_day)
-      deallocate(npp_day_accu)
+      ! deallocate(npp_day_accu)
       deallocate(ph)
       deallocate(ar)
       deallocate(laia)

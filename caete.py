@@ -928,7 +928,7 @@ class grd:
                     if step==364:
                         year_id = 18
                     else:
-                        year_id = 0
+                        year_id = 28
 
               
                 if steps.size==4018:
