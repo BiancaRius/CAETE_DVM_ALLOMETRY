@@ -133,8 +133,8 @@ contains
       real(r_4),dimension(:),allocatable :: ph     !Canopy gross photosynthesis (kgC/m2/yr)
       real(r_4),dimension(:),allocatable :: ar     !Autotrophic respiration (kgC/m2/yr)
       real(r_4),dimension(:),allocatable :: nppa   !Net primary productivity / auxiliar
-      ! real(r_4),dimension(:),allocatable :: npp_day !NPP in a day to be accumulated in a year (KgC/m2/day)
-      ! real(r_4),dimension(:),allocatable :: npp_day_accu !NPP in a day to be accumulated in a year (KgC/m2/day)
+      real(r_4),dimension(:),allocatable :: npp_day !NPP in a day to be accumulated in a year (KgC/m2/day)
+      real(r_4),dimension(:),allocatable :: npp_day_accu  !NPP in a day to be accumulated in a year (KgC/m2/day)
       real(r_8),dimension(:),allocatable :: laia   !Leaf area index (m2 leaf/m2 area)
       real(r_4),dimension(:),allocatable :: rc2    !Canopy resistence (s/m)
       real(r_4),dimension(:),allocatable :: f1     !
@@ -174,9 +174,9 @@ contains
       real(r_8) :: soil_sat, ar_aux
       real(r_8), dimension(:), allocatable :: idx_grasses, idx_pdia
       
-      if(year_id.lt.12.and.year_id.ne.0)then
-         print*, 'inside budget',year_id, step
-      endif
+      ! if(year_id.gt.0)then
+      !    print*, 'inside budget',year_id, step
+      ! endif
       !     START
       !     --------------
       !     Grid cell area fraction 0-1
@@ -238,8 +238,8 @@ contains
 
       allocate(evap(nlen))
       allocate(nppa(nlen))
-      ! allocate(npp_day(nlen))
-      ! allocate(npp_day_accu(nlen))
+      allocate(npp_day(nlen))
+      allocate(npp_day_accu(nlen))
       allocate(ph(nlen))
       allocate(ar(nlen))
       allocate(laia(nlen))
@@ -301,8 +301,9 @@ contains
       
       
       do p = 1,nlen
-
-        
+         if(year_id.gt.0)then
+            print*, year_id, p
+         endif
          carbon_in_storage = 0.0D0
          testcdef = 0.0D0
          sr = 0.0D0
@@ -410,8 +411,18 @@ contains
 
         !transform NPP to gC/m2/day to be annualy accumulated in caete.py
          
-         ! npp_day(p) = (real(nppa(p),kind=r_8) * (1000.0D0 / 365.242D0))
+         ! print*, 'npp accu before', npp_day_accu(p)
+         npp_day(p) = (real(nppa(p),kind=r_8) * (1000.0D0 / 365.242D0))
 
+         npp_day_accu(p) = npp_day_accu(p) + npp_day(p)
+
+         ! if(year_id.lt.12) then
+            ! print*, npp_day_accu(p), step, p, npp_day(p), year_id
+         ! endif
+
+         ! if(year_id.eq.8)then
+         !    print*,npp_day_accu(p), year_id, step, p, npp_day(p)
+         ! endif
       enddo ! end pls_loop (p)
       !$OMP END PARALLEL DO
       epavg = emax !mm/day
@@ -540,8 +551,8 @@ contains
       deallocate(lp)
       deallocate(evap)
       deallocate(nppa)
-      ! deallocate(npp_day)
-      ! deallocate(npp_day_accu)
+      deallocate(npp_day)
+      deallocate(npp_day_accu)
       deallocate(ph)
       deallocate(ar)
       deallocate(laia)

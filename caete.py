@@ -904,23 +904,31 @@ class grd:
                 if steps.size==731:
                     if step==364:
                         year_id = 8
-                        # print(year_id)
-                        
-                    if step==730:
+                        # print(year_id,step)
+                                       
+                    elif step==730:
                         year_id = 9
-                        # print(year_id)
+                        # print(year_id,step)
+                    else:
+                        year_id = 0
+                        # print(year_id,step)
 
                 if steps.size==730:
                     if step==364:
                         year_id = 10
                         # print(year_id)
-                    if step==729:
+                    elif step==729:
                         year_id = 11
-                        # print(year_id)
+                    else:
+                        year_id = 0
+
+                    
 
                 if steps.size==365:
                     if step==364:
-                        year_id = 12
+                        year_id = 18
+                    else:
+                        year_id = 0
 
               
                 if steps.size==4018:
@@ -929,45 +937,47 @@ class grd:
                         year_id = 13
                         # print(year_id)
 
-                    if step == 730:
+                    elif step == 730:
                         year_id = 14
                         # print(year_id)
 
-                    if step == 1095:
+                    elif step == 1095:
                         year_id = 15
                         # print(year_id)
 
-                    if step == 1460:
+                    elif step == 1460:
                         year_id = 16
                         # print(year_id)
 
-                    if step == 1825:
+                    elif step == 1825:
                         year_id = 17
                         # print(year_id)
 
-                    if step == 2191:
+                    elif step == 2191:
                         year_id = 18
                         # print(year_id)
 
-                    if step == 2556:
+                    elif step == 2556:
                         year_id = 19
                         # print(year_id)
 
-                    if step == 2921:
+                    elif step == 2921:
                         year_id = 20
                         # print(year_id)
 
-                    if step == 3286:
+                    elif step == 3286:
                         year_id = 21
                         # print(year_id)
 
-                    if step == 3652:
+                    elif step == 3652:
                         year_id = 22
                         # print(year_id)
 
-                    if step == 4017:
+                    elif step == 4017:
                         year_id = 23
                         # print(year_id)
+                    else:
+                        year_id = 28
 
                 
                
